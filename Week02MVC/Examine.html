@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <table class="table table-bordered">
+        <tr>
+            <td>合同号:</td>
+            <td><input id="txtId" type="text" /></td>
+        </tr>
+        <tr>
+            <td>审核日期:</td>
+            <td><input id="txtTime" type="text" /></td>
+        </tr>
+        <tr>
+            <td>审核状态:</td>
+            <td>
+                <input id="Radio1" type="radio" name="1" />通过
+                <input id="Radio2" type="radio" name="1"/>否决
+            </td>
+        </tr>
+        <tr>
+            <td><input id="Button1" type="button" value="确定" onclick="Yes()" /></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <script>
+        Show();
+        function Show() {
+            //获取路径
+            var path = location.href;
+            //找最后一个'/'所在的位置
+            var index = path.lastIndexOf('=');
+            //截取id
+            var id = path.substr(index + 1);
+            //获取数据进行反填
+            $.ajax({
+                url: "http://localhost:51352/api/Loan/GetLoansById?id=" + id,
+                type: "get",
+                dataType: 'json',
+                success: function (d) {
+                    $("#txtId").val(d[0].Id);
+                }
+            })
+        }
+        function Yes() {
+            var obj = {};
+            obj.LoansId = $("#txtId").val();
+            obj.ExamineTime = $("#txtTime").val();
+            obj.ExamineStata = $("#Radio1").prop("checked");
+            $.ajax({
+                url: 'http://localhost:51352/api/Loan/AddExamine',
+                type: 'post',
+                data: obj,
+                success: function (d) {
+                    if (d > 0) {
+                        alert('处理成功');
+                    }
+                    else {
+                        alert('处理失败');
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+</html>

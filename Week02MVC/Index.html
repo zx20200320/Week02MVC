@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    申请人:<input id="txtName" type="text" />
+    开始日期:<input id="txtStartTime" type="text" />
+    截止日期:<input id="txtEndTime" type="text" />
+    <input id="Button1" type="button" value="查询" onclick="Sel()" />
+
+    <table class="table table-bordered" style="text-align:center">
+        <tr>
+            <td>合同号</td>
+            <td>申请人</td>
+            <td>贷款金额</td>
+            <td>开始日期</td>
+            <td>截止日期</td>
+            <td>贷款天数</td>
+            <td>保证方式</td>
+            <td>利息结算方式</td>
+            <td>审核</td>
+        </tr>
+        <tbody id="tb"></tbody>
+       
+    </table>
+
+    <script>
+        Show();
+        Sel();
+        function Show() {
+            $.ajax({
+                url: 'http://localhost:51352/api/Loan/GetLoans',
+                type: 'get',
+                success: function (d) {
+                    $("#tb").empty();
+                    $(d).each(function () {
+                        var line = '<tr>'
+                            + '<td>' + this.Id + '</td>'
+                            + '<td>' + this.Name + '</td>'
+                            + '<td>' + this.Money + '</td>'
+                            + '<td>' + this.StartTime + '</td>'
+                            + '<td>' + this.EndTime + '</td>'
+                            + '<td>' + this.LoansDay + '</td>'
+                            + '<td>' + this.Warrant + '</td>'
+                            + '<td>' + (this.LiXi == true ? "等本等息" : "等额等息") + '</td>'
+                            + '<td><a href = "Examine.html?Id=' + this.Id +'">审核</a></td>'
+                            + '</tr>';
+                        $("#tb").append(line);
+                    });
+                }
+            })
+        }
+        function Sel() {
+            var obj = {};
+            obj.name = $("#txtName").val();
+            obj.startTime = $("#txtStartTime").val();
+            obj.endTime = $("#txtEndTime").val();
+            $.ajax({
+                url: 'http://localhost:51352/api/Loan/GetLoansWhere',
+                type: 'get',
+                data: obj,
+                success: function (d) {
+                    $("#tb").empty();
+                    $(d).each(function () {
+                        var line = '<tr>'
+                            + '<td>' + this.Id + '</td>'
+                            + '<td>' + this.Name + '</td>'
+                            + '<td>' + this.Money + '</td>'
+                            + '<td>' + this.StartTime + '</td>'
+                            + '<td>' + this.EndTime + '</td>'
+                            + '<td>' + this.LoansDay + '</td>'
+                            + '<td>' + this.Warrant + '</td>'
+                            + '<td>' + (this.LiXi == true ? "等本等息" : "等额等息") + '</td>'
+                            + '<td><a href = "Examine.html?Id=' + this.Id + '">审核</a></td>'
+                            + '</tr>';
+                        $("#tb").append(line);
+                    })
+                }
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <table class="table table-bordered">
+            <tr>
+                <td>申请人:</td>
+                <td><input id="txtName" type="text" /></td>
+            </tr>
+            <tr>
+                <td>贷款金额:</td>
+                <td><input id="txtMoney" type="text" /></td>
+            </tr>
+            <tr>
+                <td>开始日期:</td>
+                <td><input id="txtStartTime" type="text" onchange="Timess()" /></td>
+            </tr>
+            <tr>
+                <td>截止日期:</td>
+                <td><input id="txtEndTime" type="text" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>贷款天数:</td>
+                <td><input id="txtDays" type="text" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>保证方式:</td>
+                <td>
+                    <input id="Checkbox1" type="checkbox" value="抵押" />抵押
+                    <input id="Checkbox2" type="checkbox" value="担保" />担保
+                    <input id="Checkbox3" type="checkbox" value="联保" />联保
+                </td>
+            </tr>
+            <tr>
+                <td>利息结算方式:</td>
+                <td>
+                    <input id="Radio1" type="radio" name="1" />等额等息
+                    <input id="Radio2" type="radio" name="1" />等本等息
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input id="Button1" type="button" value="提交" onclick="Save()" /></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+
+<script>
+    function Timess() {
+        var d = new Date($("#txtStartTime").val());
+        var ss = new Date(d.getFullYear() + 1, d.getMonth() + 1, d.getDate());
+        var ms = (ss.valueOf() - d.valueOf());
+        var day = ms / (24 * 60 * 60 * 1000);
+
+        $("#txtEndTime").val(ss.getFullYear() + "-" + ss.getMonth() + "-" + ss.getDate());
+        $("#txtDays").val(parseInt(day));
+    }
+    function Save() {
+        var obj = {};
+        obj.Name = $("#txtName").val();
+        obj.Money = $("#txtMoney").val();
+        obj.StartTime = $("#txtStartTime").val();
+        obj.EndTime = $("#txtEndTime").val();
+        obj.LoansDay = $("#txtDays").val();
+        obj.Warrant = "";
+        if (Checkbox1.checked) {
+            obj.Warrant += Checkbox1.value;
+        }
+        if (Checkbox2.checked) {
+            obj.Warrant += Checkbox2.value;
+        }
+        if (Checkbox3.checked) {
+            obj.Warrant += Checkbox3.value;
+        }
+        obj.LiXi = $("#Radio1").prop("checked");
+        $.ajax({
+            url: 'http://localhost:51352/api/Loan/AddLoan',
+            type: 'post',
+            data: obj,
+            success: function (d) {
+                if (d > 0) {
+                    alert('提交成功！');
+                    location.href = 'Index.html';
+                }
+                else {
+                    alert('提交失败！');
+                }
+            }
+        })
+    }
+</script>
